@@ -25,6 +25,24 @@
 		</form>
 	</fieldset>
 	
-	</body>
+	<fieldset style="width:300px">
+		<legend>번호 선택(최대 6개)</legend>
+		<form>
+			<button type="button" > 1 </button>
+			<button type="button" > 1 </button>
+			<button type="button" > 1 </button>
+			<button type="button" > 1 </button>
+			<button type="button" > 1 </button>
+			<button type="button" > 1 </button>
+			<button type="button" > 1 </button>
+			<button type="button" > 1 </button>
+			<button type="button" > 1 </button>
+			<button type="button" > 1 </button>
+		</form>
+	</fieldset>
+	
+<script type="text/javascript">
+
+</script>
 </body>
 </html>
