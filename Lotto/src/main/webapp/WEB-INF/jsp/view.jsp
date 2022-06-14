@@ -29,7 +29,7 @@
 	</fieldset>
 
 	<fieldset id="gameStart" style="width: 400px; display: none">
-		<legend>게임</legend>
+		<legend id="gameTitle">게임</legend>
 	</fieldset>
 
 	<script type="text/javascript">
@@ -52,9 +52,10 @@
 				$('#buttonNum').append("<br>" + "<button type='button' id='input' style='margin-right:5px'>" + "확인" + "</button>");
 				$('#buttonNum').append("<button type='button'>" + "초기화" + "</button>");
 				
+				$('#gameTitle').append("<lable> (" + gameNum + "게임)");
 				/* 게임수만큼 게임별로 6개 번호와 함께 표시 */
 				for(let i = 0; i < gameNum; i++) {
-		            $('#gameStart').append("<div><label id=l" + i + ">" + String.fromCharCode(65+i) +
+		            $('#gameStart').append("<div id='playNum'><label id=l" + i + ">" + String.fromCharCode(65+i) +
 		            		". (반)자동 or 수동 : " + "</label></div><br>"); 
 		        }
 			}
@@ -85,8 +86,20 @@
 	$("#input").click(function(){
 		let numCount = $("#selectedNum").children('button').length;
 		if(numCount == 6){
-			$("#selectedNum").append();
-			$("#selectedNum").children('button:eq(' + i +')').val()
+			let numAry = [];
+			/* 번호 오름차순으로 */
+			for(let i = 0; i < 6; i++){
+				let num = $("#selectedNum").children('button:eq(' + i +')').val();
+				numAry.push(num);
+			}
+			numAry.sort();
+			
+			let playNum = $("#playNum").children('label').length;
+			console.log(playNum);
+			for(let i = 0; i < 6; i++){
+				//$("#l" + i).append();
+			}
+			
 		}
 	});
 </script>
