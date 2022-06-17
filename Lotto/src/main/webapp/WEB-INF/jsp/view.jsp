@@ -33,10 +33,10 @@
 </style>
 </head>
 <body>
-	<fieldset style="width: 300px">
+	<fieldset id="fieldset1" style="width: 300px">
 		<legend>게임수 선택(최대 5게임)</legend>
 		<form>
-			<label>게임 수 : <select id="gameNum" onchange="">
+			<label>게임 수 : <select id="gameNum" onchange="changeNum()">
 					<option value="none">=== 선택 ===</option>
 					<option>1</option>
 					<option>2</option>
@@ -49,7 +49,7 @@
 		</form>
 	</fieldset>
 
-	<fieldset id="num" style="width: 400px; display: none">
+	<fieldset id="fieldset2" style="width: 400px; display: none">
 		<legend>번호 선택(최대 6개)</legend>
 		<form id="buttonNumForm">
 			<div id='buttonNum'></div>
@@ -61,7 +61,7 @@
 		</form>
 	</fieldset>
 
-	<fieldset id="gameStart" style="width: 420px; display: none">
+	<fieldset id="fieldset3" style="width: 420px; display: none">
 		<legend id="gameTitle">게임</legend>
 		<label id="winNum"> 당첨번호 : </label><br><br>
 		<ol id='playNum' type="A"></ol>
@@ -81,14 +81,29 @@
 		}
 	}
 }); */
+
+	<%-- 게임수 선택하고 확인 버튼 눌렀을때 --%>
+	function changeNum(){
+		let labelExist = $("#gameTitle").children('label').length;
+		if(labelExist > 0){
+			let gameNum = $("#gameNum :selected").val();
+			console.log(gameNum);
+			$("#labelGameNum").text(" (" + gameNum + "게임)");
+		}
+		
+		let liExist = $("#playNum").children('li').length;
+		let btnExist = $("#selectedNum").children('button').length;
+		
+	}
+
 	<%-- 게임수 선택하고 확인 버튼 눌렀을때 --%>
 	$("#gameSelect").click(function(){
 		let gameNum = $("#gameNum :selected").val();
 		/* 게임수가 선택되고 1~45 버튼이 생성이 안 되었으면 최초 1번 실행 */
 		  if($('#buttonNum').children('button').length == 0){
 			  
-			  $("#num").show(); // 번호선택 부분이 보이게 함.
-			  $("#gameStart").show(); // 게임 부분이 보이게 함.
+			  $("#fieldset2").show(); // 번호선택 부분이 보이게 함.
+			  $("#fieldset3").show(); // 게임 부분이 보이게 함.
 			  
 			  
 			    /* 1~45 번호 버튼 생성 */
@@ -97,7 +112,7 @@
 		            + i +"</button>"); 
 		        }
 				
-				$('#gameTitle').append("<label> (" + gameNum + "게임)</label>");
+				$('#gameTitle').append("<label id='labelGameNum'> (" + gameNum + "게임)</label>");
 				/* 게임수만큼 게임별로 6개 번호와 함께 표시 */
 				for(let i = 0; i < gameNum; i++) {
 		            $('#playNum').append("<li id='li" + i + "'> (반)자동 or 수동 : </li><br>"); 
@@ -188,7 +203,7 @@
 				lottoAry.push(i);
 			}
 			
-			/* 자동, 수동 번호들 중에 중복 제거 */
+			/* 1~45 번호 중에서 선택되어 있는 수동 번호는 중복이므로 제거 */
 			for(let i = 0; i < selectedNumAry.length; i++) {
 				let tempNum = parseInt(selectedNumAry[i]);
 				let index = lottoAry.indexOf(tempNum);
@@ -200,9 +215,9 @@
 			let randomNumAry = [];
 			let randomNum;
 			let sameNum;
-			/* 자동번호를 중복없이 생성 */
+			/* 1~45에서 수동 번호를 제거하고 나머지 번호들 중에서 자동번호를 중복없이 생성 */
 			for(let i = 0; i < numRemain; i++) {
-				randomNum = autoAry[Math.floor(Math.random() * autoAry.length)];
+				randomNum = autoAry[Math.floor(Math.random() * autoAry.length)]; // 수동 번호 제거한 배열 안에서 랜덤값 뽑기
 				sameNum = randomNumAry.includes(randomNum);
 				if(!sameNum){
 					randomNumAry.push(randomNum);
