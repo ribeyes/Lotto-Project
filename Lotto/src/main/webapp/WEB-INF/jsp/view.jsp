@@ -33,10 +33,10 @@
 </style>
 </head>
 <body>
-	<fieldset id="fieldset1" style="width: 300px">
+	<fieldset id="fieldset1" style="width: 400px">
 		<legend>게임수 선택(최대 5게임)</legend>
 		<form>
-			<label>게임 수 : <select id="gameNum" onchange="changeNum()">
+			<label>게임 수 : <select id="gameNum" >
 					<option value="none">=== 선택 ===</option>
 					<option>1</option>
 					<option>2</option>
@@ -46,6 +46,7 @@
 				</select>
 			</label>
 			<button type="button" id="gameSelect">확인</button>
+			<button type="button" id="cancelSelect" onclick="cancelNum()">취소</button>
 		</form>
 	</fieldset>
 
@@ -58,10 +59,11 @@
 			<br><br><button type='button' id='inputGame' style='margin-right:5px' onclick='registerNum()'>확인</button>
 			<button type='button' style='margin-right:5px' onclick='numReset()'>초기화</button>
 			<button type='button' style='margin-right:5px' onclick='autoNum()'>자동</button>
+			<button type='button' style='margin-right:5px' onclick='autoAll()'>전부자동</button>
 		</form>
 	</fieldset>
 
-	<fieldset id="fieldset3" style="width: 420px; display: none">
+	<fieldset id="fieldset3" style="width: 400px; display: none">
 		<legend id="gameTitle">게임</legend>
 		<label id="winNum"> 당첨번호 : </label><br><br>
 		<ol id='playNum' type="A"></ol>
@@ -82,20 +84,60 @@
 	}
 }); */
 
-	<%-- 게임수 선택하고 확인 버튼 눌렀을때 --%>
-	function changeNum(){
-		let labelExist = $("#gameTitle").children('label').length;
-		if(labelExist > 0){
-			let gameNum = $("#gameNum :selected").val();
-			console.log(gameNum);
-			$("#labelGameNum").text(" (" + gameNum + "게임)");
+	<%-- 취소 버튼 기능 --%>
+	function cancelNum(){
+		let btnExist = $("#li0").children('button').length;
+		let gameNum = $("#gameNum :selected").val();
+		let result = confirm("취소하겠습니까?");
+		if(result){
+			if(btnExist > 0){
+				$("#selectedNum").empty();
+				
+				for(let i = 0; i < 5; i++) {
+					btnExist = $("#li"+i).children('button').length;
+					if(btnExist > 0){
+						$("#li"+i).empty();
+					}
+					else{
+						break; 
+					}
+				}
+			}
 		}
-		
-		let liExist = $("#playNum").children('li').length;
-		let btnExist = $("#selectedNum").children('button').length;
 		
 	}
 
+	<%-- 전부자동 버튼 기능 --%>
+	function autoAll(){
+		let gameNum = $("#gameNum :selected").val();
+		let btnExist;
+		for(let i = 0; i < gameNum; i++) {
+			btnExist = $("#selectedNum").children('button').length;
+			if(btnExist > 0){
+				alert("아직 완료하지 않은 게임이 있습니다.");
+				return;
+			}
+			else{
+				let randomNum;
+				let lottoNum = [];
+				
+				for(let j = 0; j < 6; j++) {
+					randomNum = Math.floor(Math.random() * 45 + 1);
+					lottoNum.push(randomNum);
+				}
+				lottoNum.sort(function (a, b) { // 오름차순 정렬 함수
+					  return a - b;
+				}); 
+				
+				for(let j = 0; j < 6; j++) {
+					$("#li"+i).
+				}
+				
+			}
+		}
+	}
+	
+	
 	<%-- 게임수 선택하고 확인 버튼 눌렀을때 --%>
 	$("#gameSelect").click(function(){
 		let gameNum = $("#gameNum :selected").val();
@@ -114,8 +156,8 @@
 				
 				$('#gameTitle').append("<label id='labelGameNum'> (" + gameNum + "게임)</label>");
 				/* 게임수만큼 게임별로 6개 번호와 함께 표시 */
-				for(let i = 0; i < gameNum; i++) {
-		            $('#playNum').append("<li id='li" + i + "'> (반)자동 or 수동 : </li><br>"); 
+				for(let i = 0; i < 5; i++) {
+		            $('#playNum').append("<li id='li" + i + "'> : </li><br>"); 
 		        }
 			}
 	});
@@ -235,7 +277,7 @@
 			});
 			
 			/* 화면에 번호 표시 */
-			$("#selectedNum").empty();
+			$("#selectedNum").children("button").remove();
 			for(let i = 0; i < 6; i++){
 				$("#selectedNum").append("<button type='button' value=" + numAry[i] + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%' >" 
 						+ numAry[i] + "</button>");
