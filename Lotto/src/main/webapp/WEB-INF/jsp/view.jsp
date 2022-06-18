@@ -87,6 +87,7 @@
 	<%-- 취소 버튼 기능 --%>
 	function cancelNum(){
 		let btnExist = $("#li0").children('button').length;
+		let winExist = $("#winNum").children('button').length;
 		let gameNum = $("#gameNum :selected").val();
 		let result = confirm("취소하겠습니까?");
 		if(result){
@@ -103,6 +104,10 @@
 					}
 				}
 			}
+			if(winExist > 0) {
+				$("#winNum").children('button').remove();
+				$("#winNum").children('label').remove();
+			}
 		}
 		
 	}
@@ -113,24 +118,34 @@
 		let btnExist;
 		for(let i = 0; i < gameNum; i++) {
 			btnExist = $("#selectedNum").children('button').length;
+			/* 선택된 번호가 있는지 점검 */
 			if(btnExist > 0){
 				alert("아직 완료하지 않은 게임이 있습니다.");
 				return;
 			}
 			else{
-				let randomNum;
 				let lottoNum = [];
-				
-				for(let j = 0; j < 6; j++) {
-					randomNum = Math.floor(Math.random() * 45 + 1);
-					lottoNum.push(randomNum);
+				let randomNum;
+				let sameNum;				
+				btnExist = $("#li"+i).children('button').length;
+				if(btnExist == 0){
+					for(let j = 0; j < 6; j++) {
+						randomNum = Math.floor(Math.random() * 45 + 1);
+						sameNum = lottoNum.includes(randomNum);
+						if(sameNum) j--;
+						else lottoNum.push(randomNum);
+					}
+					lottoNum.sort(function (a, b) { // 오름차순 정렬 함수
+						  return a - b;
+					}); 
+					
+					$("#li"+i).append("<label style='margin-right:20px'>자동</label>");
+					for(let j = 0; j < 6; j++) {
+						$("#li"+i).append("<button type='button' id='registerli"+ i + lottoNum[j] + "' value=" + lottoNum[j] + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%' >" 
+								+ lottoNum[j] + "</button>");
+					}
+					
 				}
-				lottoNum.sort(function (a, b) { // 오름차순 정렬 함수
-					  return a - b;
-				}); 
-				
-				
-				
 			}
 		}
 	}
@@ -155,7 +170,7 @@
 				$('#gameTitle').append("<label id='labelGameNum'> (" + gameNum + "게임)</label>");
 				/* 게임수만큼 게임별로 6개 번호와 함께 표시 */
 				for(let i = 0; i < 5; i++) {
-		            $('#playNum').append("<li id='li" + i + "'> : </li><br>"); 
+		            $('#playNum').append("<li id='li" + i + "'>  </li><br>"); 
 		        }
 			}
 	});
@@ -176,7 +191,7 @@
 		
 		/* 선택할 수 있는 번호 개수는 최대 6개까지 */
 		if(numCount < 6 && !sameNum){
-			$("#selectedNum").append("<button type='button' value=" + $(num).val() + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%' >" 
+			$("#selectedNum").append("<button type='button' name='passive' value=" + $(num).val() + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%' >" 
 			+ $(num).val() + "</button>");
 		}
 		
@@ -186,6 +201,31 @@
 	function registerNum(){
 		let numCount = $("#selectedNum").children('button').length;
 		if(numCount == 6){
+			 
+			let firstBtnName = $("#selectedNum").children('button:eq(0)').attr("name");
+			let lastBtnName = $("#selectedNum").children('button:eq(5)').attr("name");
+			let btnExist;
+			let listIdx;
+			/* 현재 게임이 자동 or 반자동 or 수동인지 표시*/
+			for(let i = 0; i < 5; i++){
+				btnExist = $("#li"+i).children('button').length;
+				if(btnExist == 0) {
+					listIdx = i;
+					break;
+				} 
+			}
+			
+			if(firstBtnName == "passive" && lastBtnName == "passive"){//수동
+				$("#li"+listIdx).append("<label style='margin-right:20px'>수동</label>" );
+			}
+			else if(firstBtnName == "passive" && lastBtnName == "auto"){//반자동
+				$("#li"+listIdx).append("<label style='margin-right:5px'>반자동</label>" );
+			}
+			else{//자동
+				$("#li"+listIdx).append("<label style='margin-right:20px'>자동</label>" );
+			}
+			
+			
 			let numAry = [];
 			/* 번호 오름차순으로 */
 			for(let i = 0; i < 6; i++){
@@ -194,9 +234,10 @@
 			}
 			numAry.sort(function (a, b) { // 오름차순 정렬 함수
 				  return a - b;
-			}); 
+			});
 			
-			/* 각 게임에 선택한 6개 번호 등록 */
+			/* 선택한 6개 번호를 비어있는 게임에 등록 */
+			
 			for(let i = 0; i < 5; i++){
 				let playNum = $("#playNum").children('li:eq(' + i +')').attr('id');
 				let btnCount = $("#"+ playNum).children('button').length;
@@ -204,9 +245,6 @@
 					for(let j = 0; j < 6; j++){
 						$("#"+playNum).append("<button type='button' id='register"+ playNum + numAry[j] + "' value=" + numAry[j] + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%' >" 
 								+ numAry[j] + "</button>");
-						
-						let num = $("#selectedNum").children('button:eq(' + i +')').val();
-						
 					}
 					$("#selectedNum").empty();
 					break;
@@ -227,7 +265,7 @@
 		
 		
 		/* 선택한 번호 6개가 안 되는 상태에서 '자동' 눌러야 실행*/
-		if(numCount != 6){
+		if(numCount < 6){
 			let selectedNumAry = [];
 			let selectedNum;
 			
@@ -269,15 +307,13 @@
 				}
 			}
 			
-			let numAry = randomNumAry.concat(selectedNumAry);
-			numAry.sort(function (a, b) { // 오름차순 정렬 함수
-				  return a - b;
-			});
+			//let numAry = selectedNumAry.concat(randomNumAry);
+			let numAry = randomNumAry;
 			
 			/* 화면에 번호 표시 */
-			$("#selectedNum").children("button").remove();
-			for(let i = 0; i < 6; i++){
-				$("#selectedNum").append("<button type='button' value=" + numAry[i] + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%' >" 
+			//$("#selectedNum").children("button").remove();
+			for(let i = 0; i < numAry.length; i++){
+				$("#selectedNum").append("<button type='button' name='auto' value=" + numAry[i] + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%' >" 
 						+ numAry[i] + "</button>");
 				}
 			
@@ -298,6 +334,7 @@
 			lottoAry.push(i);
 		}
 		
+		
 		/* 당첨번호 생성 */
 		for(let i = 0; i < 6; i++){
 			randomNum = lottoAry[Math.floor(Math.random() * lottoAry.length)];
@@ -316,13 +353,23 @@
 			  return a - b;
 		});
 		
+		/* 2등 번호 생성 */
+		let rank2Num;
+		while(true){
+			rank2Num = Math.floor(Math.random() * 45 + 1);
+			sameNum = randomAry.includes(rank2Num);
+			if(!sameNum) break;
+		}
+		
 		/* 화면에 번호 표시 */
 		for(let i = 0; i < 6; i++){
 			$("#winNum").append("<button type='button' id='color" + randomAry[i] +"' value=" + randomAry[i] + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%' >" 
 					+ randomAry[i] + "</button>");
 			
 		}
-		
+		$("#winNum").append("<label>   + </label><button type='button' id='color" + rank2Num +"' value=" + rank2Num + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%'>" 
+				+ rank2Num + "</button>");
+				
 		/* 일치하는 번호 확인 */
 		let gameCount = $("#playNum").children("li").length;
 		let sameGameNum;	
@@ -340,19 +387,18 @@
 			/* 2~6개의 일치하는 개수로 1~5 등수 출력 */
 			switch(winCount){
 			case 6:
-				$("#li"+i).append("<br><label id=r1>: 1등</label>");
+				$("#li"+i).append("<label id=r1 style='margin-left:10px'>: 1등</label>");
  				break;
 			case 5:
-				$("#li"+i).append("<br><label id=r2>: 2등</label>");
+				sameGameNum = randomAry.includes(rank2Num);
+				if(sameGameNum) $("#li"+i).append("<label id=r2 style='margin-left:10px'>: 2등</label>");
+				else $("#li"+i).append("<label id=r3 style='margin-left:10px'>: 3등</label>");
  				break;
 			case 4:
-				$("#li"+i).append("<br><label id=r3>: 3등</label>");
+				$("#li"+i).append("<label id=r4 style='margin-left:10px'>: 4등</label>");
  				break;
 			case 3:
-				$("#li"+i).append("<br><label id=r4>: 4등</label>");
- 				break;
-			case 2:
-				$("#li"+i).append("<br><label id=r5>: 5등</label>");
+				$("#li"+i).append("<label id=r5 style='margin-left:10px'>: 5등</label>");
  				break;
  			default:
 			}
