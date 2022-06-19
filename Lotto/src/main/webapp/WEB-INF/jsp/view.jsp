@@ -36,8 +36,8 @@
 	<fieldset id="fieldset1" style="width: 400px">
 		<legend>게임수 선택(최대 5게임)</legend>
 		<form>
-			<label>게임 수 : <select id="gameNum" >
-					<option value="none">=== 선택 ===</option>
+			<label>게임 수 : <select id="gameNum" onchange="gameNumChange()">
+					<option value="none" >=== 선택 ===</option>
 					<option>1</option>
 					<option>2</option>
 					<option>3</option>
@@ -53,6 +53,7 @@
 	<fieldset id="fieldset2" style="width: 400px; display: none">
 		<legend>번호 선택(최대 6개)</legend>
 		<form id="buttonNumForm">
+			<ul id='date' style='list-style:none'></ul>
 			<div id='buttonNum'></div>
 			<br><label>번호 : </label>
 			<div id='selectedNum' style='display: inline'></div>
@@ -84,6 +85,57 @@
 	}
 }); */
 
+	<%-- 게임수 변경시 --%>
+	function gameNumChange(){
+		let changeNum = $('#date').children('li').length;
+		let btnExist = $("#li0").children('button').length;
+		let winExist = $("#winNum").children('button').length;
+		let none = $("#gameNum :selected").val();
+		
+		 
+		if(changeNum > 0 && none != "none"){
+			const result = confirm("변경하면 초기화됩니다.");
+			if(result){
+				$('#date').children("li").remove();
+			
+				if(btnExist > 0){
+					$("#selectedNum").empty();
+					
+					for(let i = 0; i < 5; i++) {
+						btnExist = $("#li"+i).children('button').length;
+						if(btnExist > 0){
+							$("#li"+i).empty();
+						}
+						else{
+							break; 
+						}
+					}
+				}
+				if(winExist > 0) {
+					$("#winNum").children('button').remove();
+					$("#winNum").children('label').remove();
+				}
+			
+			}
+			else{
+				(function () {
+				let previous;
+				 $("#gameNum").focus(function () {
+				        // Store the current value on focus, before it changes
+				        previous = this.value;
+				    }).change(function() {
+				        // Do soomething with the previous value after the change
+				        console.log(previous);
+				        
+				        previous = this.value;
+				    });
+				})();
+			}
+		}
+		
+		
+	}
+	
 	<%-- 취소 버튼 기능 --%>
 	function cancelNum(){
 		let btnExist = $("#li0").children('button').length;
@@ -91,6 +143,7 @@
 		let gameNum = $("#gameNum :selected").val();
 		let result = confirm("취소하겠습니까?");
 		if(result){
+			$('#date').children('li').remove();
 			if(btnExist > 0){
 				$("#selectedNum").empty();
 				
@@ -114,6 +167,10 @@
 
 	<%-- 전부자동 버튼 기능 --%>
 	function autoAll(){
+		/* 당첨번호가 표시되어 있는 상태면 실행 불가 */
+		let winNum = $("#winNum").children("button").length;
+		if(winNum > 0) return;
+			
 		let gameNum = $("#gameNum :selected").val();
 		let btnExist;
 		for(let i = 0; i < gameNum; i++) {
@@ -151,32 +208,76 @@
 	}
 	
 	
+	
+	<%-- 발행일 날짜(현재 날짜, 요일 및 시간) --%>
+	function nowDate(d){
+		/* 현재 날짜 */
+	    let now = new Date(d);
+	    return now.getFullYear() + "-" + ('0'+(now.getMonth()+1)).slice(-2) + "-" + now.getDate() + " (" + '일월화수목금토'.charAt(now.getUTCDay())+') ' 
+	    + now.getHours() + ":" + ('0'+now.getMinutes()).slice(-2) + ":" + ('0'+now.getSeconds()).slice(-2);
+	}
+	
+	<%-- 현재 날짜 이후로 가장 가까운 토요일의 날짜(추첨일) --%>
+	function getSaturdayDate(d) {
+	    let paramDate = new Date(d); // new Date('2021-06-19'): 일요일
+	 
+	    let day = paramDate.getDay();
+	    let diff = paramDate.getDate() - day + (day == 0 ? 6 : 6);
+	    return new Date(paramDate.setDate(diff)).toISOString().substring(0, 10);
+	    
+	    // return : 2021-06-25 (토요일)
+	}
+	
 	<%-- 게임수 선택하고 확인 버튼 눌렀을때 --%>
 	$("#gameSelect").click(function(){
 		let gameNum = $("#gameNum :selected").val();
+		//console.log(gameNum);
+		let date = new Date();
+		let now = nowDate(date);
+		let today = new Date().toISOString().substring(0, 10);
+		let lottoDay = getSaturdayDate(today);
+		let oneYearLater = nowDate(new Date().setFullYear(new Date().getFullYear() + 1));
+		let dateExist = $('#date').children('li').length;
 		/* 게임수가 선택되고 1~45 버튼이 생성이 안 되었으면 최초 1번 실행 */
 		  if($('#buttonNum').children('button').length == 0){
+			    $("#fieldset2").show(); // 번호선택 부분이 보이게 함.
+			    $("#fieldset3").show(); // 게임 부분이 보이게 함.
 			  
-			  $("#fieldset2").show(); // 번호선택 부분이 보이게 함.
-			  $("#fieldset3").show(); // 게임 부분이 보이게 함.
-			  
-			  
+			    
+			    if(dateExist == 0){
+			    	$('#date').append("<li><label>발 행 일 &nbsp: " + now + "</label></<li>");
+				    $('#date').append("<li><label>추 첨 일 &nbsp: " + lottoDay + "</label></<li>");
+				    $('#date').append("<li><label>지급기한 : " + oneYearLater + "</label></<li>");
+			    }
+			    
 			    /* 1~45 번호 버튼 생성 */
 				for(let i = 1; i <= 45; i++) {
 		            $('#buttonNum').append("<button type='button' value=" + i + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%' onclick='clickNum(this)'>" 
 		            + i +"</button>"); 
 		        }
 				
-				$('#gameTitle').append("<label id='labelGameNum'> (" + gameNum + "게임)</label>");
+				$('#gameTitle').append("<label id='labelGameNum' for='labelGame'> (" + gameNum + "게임)</label>");
 				/* 게임수만큼 게임별로 6개 번호와 함께 표시 */
 				for(let i = 0; i < 5; i++) {
 		            $('#playNum').append("<li id='li" + i + "'>  </li><br>"); 
 		        }
 			}
+		  else{
+			  if(dateExist == 0){
+			    	$('#date').append("<li><label>발 행 일 &nbsp: " + now + "</label></<li>");
+				    $('#date').append("<li><label>추 첨 일 &nbsp: " + lottoDay + "</label></<li>");
+				    $('#date').append("<li><label>지급기한 : " + oneYearLater + "</label></<li>");
+			    }
+			  $("#labelGameNum").text(" (" + gameNum + "게임)");
+		  }
 	});
 	
 	<%-- 1~45 버튼 눌렀을때 --%>
 	function clickNum(num){
+		/* 당첨번호가 표시되어 있는 상태면 실행 불가 */
+		let winNum = $("#winNum").children("button").length;
+		if(winNum > 0) return;
+		
 		/* 선택한 번호가 중복되는 것이 있는지 체크 */
 		let selectedNumAry = [];
 		let numCount = $("#selectedNum").children('button').length;
@@ -186,11 +287,17 @@
 		} 
 		
 		let sameNum = selectedNumAry.includes($(num).val());
-		if(sameNum) //같은 번호 선택하면 알림창
-			alert("같은 번호를 선택했습니다!");
+		if(sameNum){
+			alert("같은 번호를 선택했습니다!");//같은 번호 선택하면 알림창
+			return;
+		} 
+			
 		
+		
+		let gameNum = $("#gameNum :selected").val();
+		let btnExist = $("#li" + (gameNum-1)).children("button").length; 
 		/* 선택할 수 있는 번호 개수는 최대 6개까지 */
-		if(numCount < 6 && !sameNum){
+		if(numCount < 6 && btnExist == 0){
 			$("#selectedNum").append("<button type='button' name='passive' value=" + $(num).val() + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%' >" 
 			+ $(num).val() + "</button>");
 		}
@@ -200,6 +307,7 @@
 	<%-- 번호 6개 선택하고 확인 버튼 눌렀을때 --%>
 	function registerNum(){
 		let numCount = $("#selectedNum").children('button').length;
+		let gameNum = $("#gameNum :selected").val();
 		if(numCount == 6){
 			 
 			let firstBtnName = $("#selectedNum").children('button:eq(0)').attr("name");
@@ -237,8 +345,7 @@
 			});
 			
 			/* 선택한 6개 번호를 비어있는 게임에 등록 */
-			
-			for(let i = 0; i < 5; i++){
+			for(let i = 0; i < gameNum; i++){
 				let playNum = $("#playNum").children('li:eq(' + i +')').attr('id');
 				let btnCount = $("#"+ playNum).children('button').length;
 				if(btnCount != 6){
@@ -260,12 +367,18 @@
 	
 	<%-- 자동 버튼 눌렀을때 --%>
 	function autoNum(){
+		/* 당첨번호가 표시되어 있는 상태면 실행 불가 */
+		let winNum = $("#winNum").children("button").length;
+		if(winNum > 0) return;
+		
 		let numCount = $("#selectedNum").children('button').length;
 		let numRemain = 6 - numCount; 
+		let gameNum = $("#gameNum :selected").val();
+		let btnExist = $("#li"+(gameNum-1)).children("button").length;
 		
 		
 		/* 선택한 번호 6개가 안 되는 상태에서 '자동' 눌러야 실행*/
-		if(numCount < 6){
+		if(numCount < 6 && btnExist == 0){
 			let selectedNumAry = [];
 			let selectedNum;
 			
@@ -322,12 +435,14 @@
 	
 	<%-- 실행 버튼 눌렀을때 --%>
 	function playGame(){
+		
+			
 		let numCount = $("#winNum").children('button').length;
 		let randomAry = [];
 		let randomNum;
 		let sameNum;
 		
-		if(numCount != 6){
+		if(numCount == 0){
 		/* 1~45 번호들 저장한 배열 */
 		let lottoAry = [];
 		for(let i = 1; i <= 45; i++) {
@@ -372,7 +487,9 @@
 				
 		/* 일치하는 번호 확인 */
 		let gameCount = $("#playNum").children("li").length;
-		let sameGameNum;	
+		let sameGameNum;
+		let sameRank2;
+		let cssRank2;
 		let winCount = 0;
 		for(let i = 0; i < gameCount; i++){
 			for(let j = 0; j < 6; j++){
@@ -383,15 +500,28 @@
 					$("#register"+ playNum + btnNum).css("border", "3px solid #E10C0C"); //번호 일치하면 빨간색 테두리로 표시
 					winCount++;
 				}
+				else{
+					sameRank2 = btnNum;
+					cssRank2 = "register"+ playNum + btnNum;
+				}
 			}
+			
+			let gameAry = [];
+			for(let j = 0; j < 6; j++){
+				gameAry = $('#li'+i).children('button:eq(' + j +')').val();
+			}
+			
 			/* 2~6개의 일치하는 개수로 1~5 등수 출력 */
 			switch(winCount){
 			case 6:
 				$("#li"+i).append("<label id=r1 style='margin-left:10px'>: 1등</label>");
  				break;
 			case 5:
-				sameGameNum = randomAry.includes(rank2Num);
-				if(sameGameNum) $("#li"+i).append("<label id=r2 style='margin-left:10px'>: 2등</label>");
+				sameGameNum = gameAry.includes(rank2Num);
+				if(sameGameNum) {
+					$("#li"+i).append("<label id=r2 style='margin-left:10px'>: 2등</label>");
+					$("#" + cssRank2).css("border", "3px solid #E10C0C");
+				}
 				else $("#li"+i).append("<label id=r3 style='margin-left:10px'>: 3등</label>");
  				break;
 			case 4:
@@ -404,6 +534,7 @@
 			}
 			winCount = 0;
 		}
+		
 		}
 	}
 </script>
