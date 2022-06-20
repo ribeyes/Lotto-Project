@@ -6,7 +6,7 @@
 <title>로또</title>
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <style>
-	button[value='1'], [value='2'], [value='3'], [value='4'], [value='5']
+	button[value='1'], button[value='2'], button[value='3'], button[value='4'], button[value='5']
 	, [value='6'], [value='7'], [value='8'], [value='9'], [value='10']{
 		color : white;
 		background-color : #F2BA06; //노란색
@@ -36,13 +36,13 @@
 	<fieldset id="fieldset1" style="width: 400px">
 		<legend>게임수 선택(최대 5게임)</legend>
 		<form>
-			<label>게임 수 : <select id="gameNum" onchange="gameNumChange()">
+			<label>게임 수 : <select id="gameNum" > 
 					<option value="none" >=== 선택 ===</option>
-					<option>1</option>
-					<option>2</option>
-					<option>3</option>
-					<option>4</option>
-					<option>5</option>
+					<option value="1" >1</option>
+					<option value="2" >2</option>
+					<option value="3" >3</option>
+					<option value="4" >4</option>
+					<option value="5" >5</option>
 				</select>
 			</label>
 			<button type="button" id="gameSelect">확인</button>
@@ -86,62 +86,56 @@
 }); */
 
 	<%-- 게임수 변경시 --%>
-	function gameNumChange(){
-		let changeNum = $('#date').children('li').length;
-		let btnExist = $("#li0").children('button').length;
-		let winExist = $("#winNum").children('button').length;
-		let none = $("#gameNum :selected").val();
-		
-		 
-		if(changeNum > 0 && none != "none"){
-			const result = confirm("변경하면 초기화됩니다.");
-			if(result){
-				$('#date').children("li").remove();
+	let previous; // 게임수 변경시 뜨는 창에서 취소 눌렀을때 진행중인 게임수가 변경되지 않게 하기 위한 변수
+	$("#gameNum").focus(function () { 
+	       previous = $("#gameNum :selected").val();
+	   }).change(function() {
+		    let changeNum = $('#date').children('li').length;
+			let btnExist = $("#li0").children('button').length;
+			let winExist = $("#winNum").children('button').length;
+			let none = $("#gameNum :selected").val();
 			
-				if(btnExist > 0){
-					$("#selectedNum").empty();
-					
-					for(let i = 0; i < 5; i++) {
-						btnExist = $("#li"+i).children('button').length;
-						if(btnExist > 0){
-							$("#li"+i).empty();
-						}
-						else{
-							break; 
+			 
+			if(changeNum > 0 && none != "none"){	
+				const result = confirm("변경하면 초기화됩니다.");
+				if(result){
+					$('#date').children("li").remove();
+				
+					if(btnExist > 0){
+						$("#selectedNum").empty();
+						
+						for(let i = 0; i < 5; i++) {
+							btnExist = $("#li"+i).children('button').length;
+							if(btnExist > 0){
+								$("#li"+i).empty();
+							}
+							else{
+								break; 
+							}
 						}
 					}
+					if(winExist > 0) {
+						$("#winNum").children('button').remove();
+						$("#winNum").children('label').remove();
+					}
+				
+					alert("게임수를 고르고 확인을 눌러주세요.");
+				} // 변경시 뜨는 창에서 취소 눌렀을 경우
+				else{
+					$("#gameNum").val(previous).prop("selected", true);
 				}
-				if(winExist > 0) {
-					$("#winNum").children('button').remove();
-					$("#winNum").children('label').remove();
-				}
-			
 			}
-			else{
-				(function () {
-				let previous;
-				 $("#gameNum").focus(function () {
-				        // Store the current value on focus, before it changes
-				        previous = this.value;
-				    }).change(function() {
-				        // Do soomething with the previous value after the change
-				        console.log(previous);
-				        
-				        previous = this.value;
-				    });
-				})();
-			}
-		}
-		
-		
-	}
+	       
+	   });
+	
+	
 	
 	<%-- 취소 버튼 기능 --%>
 	function cancelNum(){
 		let btnExist = $("#li0").children('button').length;
 		let winExist = $("#winNum").children('button').length;
 		let gameNum = $("#gameNum :selected").val();
-		let result = confirm("취소하겠습니까?");
+		let result = confirm("취소하면 초기화됩니다");
 		if(result){
 			$('#date').children('li').remove();
 			if(btnExist > 0){
@@ -219,27 +213,29 @@
 	
 	<%-- 현재 날짜 이후로 가장 가까운 토요일의 날짜(추첨일) --%>
 	function getSaturdayDate(d) {
-	    let paramDate = new Date(d); // new Date('2021-06-19'): 일요일
+	    let paramDate = new Date(d); // new Date('2022-06-19'): 일요일
 	 
 	    let day = paramDate.getDay();
 	    let diff = paramDate.getDate() - day + (day == 0 ? 6 : 6);
-	    return new Date(paramDate.setDate(diff)).toISOString().substring(0, 10);
+	    return new Date(paramDate.setDate(diff)).toISOString().substring(0, 10) 
+	    + " (" + '일월화수목금토'.charAt(paramDate.getUTCDay())+') ';
 	    
-	    // return : 2021-06-25 (토요일)
+	    // return : 2022-06-25 (토요일)
 	}
 	
 	<%-- 게임수 선택하고 확인 버튼 눌렀을때 --%>
 	$("#gameSelect").click(function(){
 		let gameNum = $("#gameNum :selected").val();
-		//console.log(gameNum);
+		let buttonNum = $('#buttonNum').children('button').length;
 		let date = new Date();
 		let now = nowDate(date);
 		let today = new Date().toISOString().substring(0, 10);
 		let lottoDay = getSaturdayDate(today);
 		let oneYearLater = nowDate(new Date().setFullYear(new Date().getFullYear() + 1));
 		let dateExist = $('#date').children('li').length;
+		
 		/* 게임수가 선택되고 1~45 버튼이 생성이 안 되었으면 최초 1번 실행 */
-		  if($('#buttonNum').children('button').length == 0){
+		  if(gameNum != "none" && buttonNum == 0 ){
 			    $("#fieldset2").show(); // 번호선택 부분이 보이게 함.
 			    $("#fieldset3").show(); // 게임 부분이 보이게 함.
 			  
@@ -263,12 +259,14 @@
 		        }
 			}
 		  else{
-			  if(dateExist == 0){
-			    	$('#date').append("<li><label>발 행 일 &nbsp: " + now + "</label></<li>");
-				    $('#date').append("<li><label>추 첨 일 &nbsp: " + lottoDay + "</label></<li>");
-				    $('#date').append("<li><label>지급기한 : " + oneYearLater + "</label></<li>");
-			    }
-			  $("#labelGameNum").text(" (" + gameNum + "게임)");
+			  if(gameNum == "none") alert("게임수를 선택해주세요.");
+			  else {
+				  $('#date').append("<li><label>발 행 일 &nbsp: " + now + "</label></<li>");
+				  $('#date').append("<li><label>추 첨 일 &nbsp: " + lottoDay + "</label></<li>");
+				  $('#date').append("<li><label>지급기한 : " + oneYearLater + "</label></<li>");
+				  $("#labelGameNum").text(" (" + gameNum + "게임)");
+			  }
+			  
 		  }
 	});
 	
@@ -420,11 +418,9 @@
 				}
 			}
 			
-			//let numAry = selectedNumAry.concat(randomNumAry);
 			let numAry = randomNumAry;
 			
 			/* 화면에 번호 표시 */
-			//$("#selectedNum").children("button").remove();
 			for(let i = 0; i < numAry.length; i++){
 				$("#selectedNum").append("<button type='button' name='auto' value=" + numAry[i] + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%' >" 
 						+ numAry[i] + "</button>");
@@ -438,11 +434,12 @@
 		
 			
 		let numCount = $("#winNum").children('button').length;
+		let listCount = $("#li0").children('button').length;
 		let randomAry = [];
 		let randomNum;
 		let sameNum;
 		
-		if(numCount == 0){
+		if(numCount == 0 && listCount != 0){
 		/* 1~45 번호들 저장한 배열 */
 		let lottoAry = [];
 		for(let i = 1; i <= 45; i++) {
