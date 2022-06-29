@@ -18,18 +18,32 @@
 			</tr>
 		</table>
 		<input type="button" value="회원가입" onclick="signUp()">
-		<input type="button" value="로그인" onclick="login()">
+		<input type="button" id="login" value="로그인">
 	</form>
 </body>
 <script>
 
 	function signUp(){
-		location.href="signUp.do";
+		location.replace("signUpPage.do");
 	}
 	
-	function login(){
+	$("#login").click(function () {
 		let id = $("#userId").val();
 		let pw = $("#userPw").val();
+		let noInputId = $("#userId").val().length;
+		let noInputPw = $("#userPw").val().length;
+		
+		//'아이디' 입력창에 아무것도 입력하지 않은 경우
+		if(noInputId == 0){
+		    alert( '아이디가 입력되지 않았습니다.');
+		    return;
+		}
+
+		//'비밀번호' 입력창에 아무것도 입력하지 않은 경우
+		if(noInputPw == 0){
+		    alert( '비밀번호 입력되지 않았습니다.');
+		    return;
+		}
 		
 		//입력 받은 ID에 공백 혹은 특수문자가 있는 경우
 		if(id.search(/\W|\s/g) > -1){
@@ -43,8 +57,32 @@
 		    return;
 		}
 		
-		alert( '로그인 되었습니다!');
-		location.href="view.do";
-	}
+		$.ajax({
+			  url : "/loginAttempt.do",
+			  type : 'POST',
+			  data: {
+				  "id": id,
+				  "pw": pw
+			  },
+			  dataType : "text",
+			  success : function(data) {
+				  
+				  console.log(data);
+				  if(data == "true"){
+					  alert( '로그인 되었습니다!');
+					  //location.replace("view.do");
+				  }
+				  else{
+					  alert( '아이디 또는 비밀번호가 올바르지 않습니다!');
+					  //location.replace("login.do");
+				  }
+			  },
+			  error : function(){
+					alert("ajax 실패");
+				}
+		});
+		
+	});
+	
 </script>
 </html>

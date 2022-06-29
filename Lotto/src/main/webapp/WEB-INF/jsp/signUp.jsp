@@ -20,7 +20,7 @@
 				<td><label>비밀번호 확인 : </label></td><td><input type="text" id="pwCheck" placeholder="패스워드를 입력하세요."></td>
 			</tr>
 		</table>
-		<input type="button" value="회원가입" onclick="signUp()">
+		<input type="button" value="가입하기" onclick="signUp()">
 	</form>
 </body>
 <script type="text/javascript">
@@ -70,8 +70,23 @@
 		    return;
 		}
 		
-		alert( '회원가입이 완료되었습니다!');
-		location.href="login.do";
+		$.ajax({
+			  url : "/loginDB.do",
+			  type : 'POST',
+			  data: {
+				  "id": id,
+				  "pw": pw
+			  },
+			  dataType : "text",
+			  success : function(data) {
+				  alert( '회원가입이 완료되었습니다!');
+				  location.href="loginPage.do";
+			  },
+			  error : function(){
+					alert("에러");
+				}
+		});
+		
 	}
 </script>
 </html>
