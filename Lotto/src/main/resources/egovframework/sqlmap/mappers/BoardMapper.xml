@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="egovframework.example.dao.LottoDAO">
-	<select id="getName" resultType="map">
-		SELECT name
+	<select id="getUser" resultType="User">
+		SELECT id, pw
 		FROM user
 	</select>
+	
+	<insert id="insertUser">
+	 	INSERT INTO user(id,pw) VALUES(#{id},#{pw})
+	 </insert>
 </mapper>
