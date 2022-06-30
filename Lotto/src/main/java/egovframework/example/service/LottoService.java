@@ -17,4 +17,9 @@ public class LottoService {
     public List<User> getUser() {  // user 테이블
     	return lottoDAO.getUser();
     }
+    
+    public int insertUser(User user) {  // user 테이블에 넣기
+    	return lottoDAO.insertUser(user);
+    }
 }
+
