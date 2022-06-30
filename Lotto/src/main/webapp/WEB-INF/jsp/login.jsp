@@ -24,7 +24,7 @@
 <script>
 
 	function signUp(){
-		location.replace("signUpPage.do");
+		location.replace("signUp.do");
 	}
 	
 	$("#login").click(function () {
@@ -66,16 +66,16 @@
 			  },
 			  dataType : "text",
 			  success : function(data) {
-				  
 				  console.log(data);
 				  if(data == "true"){
 					  alert( '로그인 되었습니다!');
-					  //location.replace("view.do");
+					  location.replace("view.do");
 				  }
-				  else{
+				  if(data == "false"){
 					  alert( '아이디 또는 비밀번호가 올바르지 않습니다!');
-					  //location.replace("login.do");
+					  location.replace("login.do");
 				  }
+				  
 			  },
 			  error : function(){
 					alert("ajax 실패");
