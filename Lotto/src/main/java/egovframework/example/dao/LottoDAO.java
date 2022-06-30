@@ -20,7 +20,12 @@ public class LottoDAO {
 	private SqlSession query;
 	
 	
-	public List<User> getUser() { // 'user' column(열) 데이터
+	public List<User> getUser() { // 'user' 테이블에 있는 컬럼 데이터들
 		return query.selectList("getUser");
 	}
+	
+	public int insertUser(User user) {
+		return query.insert("insertUser", user);
+	}
 }
+
