@@ -70,17 +70,30 @@
 		    return;
 		}
 		
+		//입력 받은 '비밀번호' 와 '비밀번호 확인'이 일치하지 않는 경우
+		if(pw !== pwCheck){
+			alert( '비밀번호가 일치하지 않습니다');
+		    return;
+		}
+		
+		
 		$.ajax({
-			  url : "/loginDB.do",
+			  url : "/signUpRegister.do",
 			  type : 'POST',
 			  data: {
 				  "id": id,
 				  "pw": pw
 			  },
 			  dataType : "text",
-			  success : function(data) {
-				  alert( '회원가입이 완료되었습니다!');
-				  location.href="loginPage.do";
+			  success : function(data) { //수정해야함
+				  if(data == "true"){
+					  alert( '회원가입이 완료되었습니다!');
+					  location.replace("login.do");
+				  }
+				  if(data == "false"){
+					  alert( '회원가입 실패!');
+					  location.replace("signUp.do");
+				  }
 			  },
 			  error : function(){
 					alert("에러");
