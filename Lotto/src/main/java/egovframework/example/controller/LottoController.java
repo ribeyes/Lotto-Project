@@ -33,6 +33,7 @@ public class LottoController {
 		return "signUp";
 	}
 	
+	/* 코드 테스트 용 */
 	@RequestMapping(value="/test.do")
 	public String testPage(User user) throws Exception {
 		List<User> userAccount = lottoService.getUser();
@@ -41,11 +42,13 @@ public class LottoController {
 		return "refactory";
 	}
 	
-	
+	/* 로그인 시도 */
 	@ResponseBody
 	@RequestMapping(value="/loginAttempt.do", method=RequestMethod.POST)
 	public String loginAttempt(User user) throws Exception { 
 		List<User> account = lottoService.getUser();
+		
+		
 		String userId;
 		String userPw;
 		for (int i = 0; i < account.size(); i++) {
@@ -57,6 +60,21 @@ public class LottoController {
 		}
 		
 		return "false";
+	}
+	
+	/* 회원가입 등록 */
+	@ResponseBody
+	@RequestMapping(value="/signUpRegister.do", method=RequestMethod.POST)
+	public String signUpRegister(User user) throws Exception { 
+		int test = lottoService.insertUser(user);
+		if(test == 1) {
+			System.out.println("DB 등록완료!");
+			return "true";
+		}
+		else {
+			System.out.println("실패!");
+			return "false";
+		}
 	}
 	
 	@RequestMapping("/view.do")
