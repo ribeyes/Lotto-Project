@@ -6,4 +6,7 @@
 		FROM user
 	</select>
 	
+	<insert id="insertUser">
+		INSERT INTO user(id, pw) VALUES(#{id}, #{pw})
+	</insert>
 </mapper>
