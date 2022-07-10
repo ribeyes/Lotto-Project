@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <title>로또</title>
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="jquery.cookie.js"></script>
 <style>
 	button[value='1'], button[value='2'], button[value='3'], button[value='4'], button[value='5']
 	, [value='6'], [value='7'], [value='8'], [value='9'], [value='10']{
@@ -46,14 +47,13 @@
 				</select>
 			</label>
 			<button type="button" id="gameSelect">확인</button>
-			<button type="button" id="cancelSelect" onclick="cancelNum()">취소</button>
+			<button type="button" id="cancelSelect" onclick="cancelNum()">새게임</button>
 		</form>
 	</fieldset>
 
 	<fieldset id="fieldset2" style="width: 400px; display: none">
 		<legend>번호 선택(최대 6개)</legend>
 		<form id="buttonNumForm">
-			<ul id='date' style='list-style:none'></ul>
 			<div id='buttonNum'></div>
 			<br><label>번호 : </label>
 			<div id='selectedNum' style='display: inline'></div>
@@ -67,23 +67,12 @@
 	<fieldset id="fieldset3" style="width: 400px; display: none">
 		<legend id="gameTitle">게임</legend>
 		<label id="winNum"> 당첨번호 : </label><br><br>
+		<ul id='date' style='list-style:none'></ul>
 		<ol id='playNum' type="A"></ol>
 		<button type='button' id='playGame' style='margin-right:5px' onclick='playGame()'>실행</button>
 	</fieldset>
 
 <script type="text/javascript">
-/* $(function() {
-	while(true){
-		let user = prompt("이름을 입력해주세요.");
-		if(user == null){
-			alert("입력하지 않았습니다.");
-		}
-		else{
-			alert("입력 완료.");
-			break;
-		}
-	}
-}); */
 
 	<%-- 게임수 변경시 --%>
 	let previous; // 게임수 변경시 뜨는 창에서 취소 눌렀을때 진행중인 게임수가 변경되지 않게 하기 위한 변수
@@ -158,7 +147,6 @@
 		}
 		
 	}
-
 	<%-- 전부자동 버튼 기능 --%>
 	function autoAll(){
 		/* 당첨번호가 표시되어 있는 상태면 실행 불가 */
@@ -203,48 +191,19 @@
 	
 	
 	
-	<%-- 발행일 날짜(현재 날짜, 요일 및 시간) --%>
-	function nowDate(d){
-		/* 현재 날짜 */
-	    let now = new Date(d);
-	    return now.getFullYear() + "-" + ('0'+(now.getMonth()+1)).slice(-2) + "-" + now.getDate() + " (" + '일월화수목금토'.charAt(now.getUTCDay())+') ' 
-	    + now.getHours() + ":" + ('0'+now.getMinutes()).slice(-2) + ":" + ('0'+now.getSeconds()).slice(-2);
-	}
 	
-	<%-- 현재 날짜 이후로 가장 가까운 토요일의 날짜(추첨일) --%>
-	function getSaturdayDate(d) {
-	    let paramDate = new Date(d); // new Date('2022-06-19'): 일요일
-	 
-	    let day = paramDate.getDay();
-	    let diff = paramDate.getDate() - day + (day == 0 ? 6 : 6);
-	    return new Date(paramDate.setDate(diff)).toISOString().substring(0, 10) 
-	    + " (" + '일월화수목금토'.charAt(paramDate.getUTCDay())+') ';
-	    
-	    // return : 2022-06-25 (토요일)
-	}
 	
 	<%-- 게임수 선택하고 확인 버튼 눌렀을때 --%>
 	$("#gameSelect").click(function(){
 		let gameNum = $("#gameNum :selected").val();
 		let buttonNum = $('#buttonNum').children('button').length;
-		let date = new Date();
-		let now = nowDate(date);
-		let today = new Date().toISOString().substring(0, 10);
-		let lottoDay = getSaturdayDate(today);
-		let oneYearLater = nowDate(new Date().setFullYear(new Date().getFullYear() + 1));
-		let dateExist = $('#date').children('li').length;
+		
 		
 		/* 게임수가 선택되고 1~45 버튼이 생성이 안 되었으면 최초 1번 실행 */
 		  if(gameNum != "none" && buttonNum == 0 ){
 			    $("#fieldset2").show(); // 번호선택 부분이 보이게 함.
 			    $("#fieldset3").show(); // 게임 부분이 보이게 함.
 			  
-			    
-			    if(dateExist == 0){
-			    	$('#date').append("<li><label>발 행 일 &nbsp: " + now + "</label></<li>");
-				    $('#date').append("<li><label>추 첨 일 &nbsp: " + lottoDay + "</label></<li>");
-				    $('#date').append("<li><label>지급기한 : " + oneYearLater + "</label></<li>");
-			    }
 			    
 			    /* 1~45 번호 버튼 생성 */
 				for(let i = 1; i <= 45; i++) {
@@ -254,16 +213,13 @@
 				
 				$('#gameTitle').append("<label id='labelGameNum' for='labelGame'> (" + gameNum + "게임)</label>");
 				/* 게임수만큼 게임별로 6개 번호와 함께 표시 */
-				for(let i = 0; i < 5; i++) {
+				for(let i = 0; i < gameNum; i++) {
 		            $('#playNum').append("<li id='li" + i + "'>  </li><br>"); 
 		        }
 			}
 		  else{
 			  if(gameNum == "none") alert("게임수를 선택해주세요.");
 			  else {
-				  $('#date').append("<li><label>발 행 일 &nbsp: " + now + "</label></<li>");
-				  $('#date').append("<li><label>추 첨 일 &nbsp: " + lottoDay + "</label></<li>");
-				  $('#date').append("<li><label>지급기한 : " + oneYearLater + "</label></<li>");
 				  $("#labelGameNum").text(" (" + gameNum + "게임)");
 			  }
 			  
@@ -429,8 +385,43 @@
 		}
 	}
 	
+	<%-- 발행일 날짜(현재 날짜, 요일 및 시간) --%>
+	function nowDate(d){
+		/* 현재 날짜 */
+	    let now = new Date(d);
+	    return now.getFullYear() + "-" + ('0'+(now.getMonth()+1)).slice(-2) + "-" + ('0'+now.getDate()).slice(-2) + " (" + '일월화수목금토'.charAt(now.getUTCDay())+') ' 
+	    + now.getHours() + ":" + ('0'+now.getMinutes()).slice(-2) + ":" + ('0'+now.getSeconds()).slice(-2);
+	}
+	
+	<%-- 현재 날짜 이후로 가장 가까운 토요일의 날짜(추첨일) --%>
+	function getSaturdayDate(d) {
+	    let paramDate = new Date(d); // new Date('2022-06-19'): 일요일
+	 
+	    let day = paramDate.getDay();
+	    let diff = paramDate.getDate() - day + (day == 0 ? 6 : 6);
+	    return new Date(paramDate.setDate(diff)).toISOString().substring(0, 10) 
+	    + " (" + '일월화수목금토'.charAt(paramDate.getUTCDay())+') ';
+	    
+	    // return : 2022-06-25 (토요일)
+	}
+	
 	<%-- 실행 버튼 눌렀을때 --%>
 	function playGame(){
+		
+		$.cookie('test', 12);
+		console.log($.cookie('test'));
+		let gameNum = $("#gameNum :selected").val();
+		let playNum = $("#li"+(gameNum-1)).children('button').length;
+		/* 게임 수 만큼 번호 등록해야만 실행 버튼이 진행 */
+		if(playNum == 0) return;
+		
+		
+		let date = new Date();
+		let now = nowDate(date);
+		let today = new Date().toISOString().substring(0, 10);
+		let lottoDay = getSaturdayDate(today);
+		let oneYearLater = nowDate(new Date().setFullYear(new Date().getFullYear() + 1));
+		let dateExist = $('#date').children('li').length;
 		
 			
 		let numCount = $("#winNum").children('button').length;
@@ -438,6 +429,13 @@
 		let randomAry = [];
 		let randomNum;
 		let sameNum;
+		
+		
+		if(dateExist == 0){
+	    	$('#date').append("<li><label>발 행 일 &nbsp: " + now + "</label></<li>");
+		    //$('#date').append("<li><label>추 첨 일 &nbsp: " + lottoDay + "20:35:00</label></<li>");
+		    $('#date').append("<li><label>지급기한 : " + oneYearLater + "</label></<li>");
+	    }
 		
 		if(numCount == 0 && listCount != 0){
 		/* 1~45 번호들 저장한 배열 */
