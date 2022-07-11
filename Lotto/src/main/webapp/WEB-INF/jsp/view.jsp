@@ -5,7 +5,6 @@
 <meta charset="UTF-8">
 <title>로또</title>
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="jquery.cookie.js"></script>
 <style>
 	button[value='1'], button[value='2'], button[value='3'], button[value='4'], button[value='5']
 	, [value='6'], [value='7'], [value='8'], [value='9'], [value='10']{
@@ -73,7 +72,6 @@
 	</fieldset>
 
 <script type="text/javascript">
-
 	<%-- 게임수 변경시 --%>
 	let previous; // 게임수 변경시 뜨는 창에서 취소 눌렀을때 진행중인 게임수가 변경되지 않게 하기 위한 변수
 	$("#gameNum").focus(function () { 
@@ -92,16 +90,7 @@
 				
 					if(btnExist > 0){
 						$("#selectedNum").empty();
-						
-						for(let i = 0; i < 5; i++) {
-							btnExist = $("#li"+i).children('button').length;
-							if(btnExist > 0){
-								$("#li"+i).empty();
-							}
-							else{
-								break; 
-							}
-						}
+						$("#playNum").empty();
 					}
 					if(winExist > 0) {
 						$("#winNum").children('button').remove();
@@ -119,7 +108,7 @@
 	
 	
 	
-	<%-- 취소 버튼 기능 --%>
+	<%-- 새게임 버튼 기능 --%>
 	function cancelNum(){
 		let btnExist = $("#li0").children('button').length;
 		let winExist = $("#winNum").children('button').length;
@@ -129,16 +118,7 @@
 			$('#date').children('li').remove();
 			if(btnExist > 0){
 				$("#selectedNum").empty();
-				
-				for(let i = 0; i < 5; i++) {
-					btnExist = $("#li"+i).children('button').length;
-					if(btnExist > 0){
-						$("#li"+i).empty();
-					}
-					else{
-						break; 
-					}
-				}
+				$("#playNum").empty();
 			}
 			if(winExist > 0) {
 				$("#winNum").children('button').remove();
@@ -147,6 +127,7 @@
 		}
 		
 	}
+	
 	<%-- 전부자동 버튼 기능 --%>
 	function autoAll(){
 		/* 당첨번호가 표시되어 있는 상태면 실행 불가 */
@@ -197,7 +178,7 @@
 	$("#gameSelect").click(function(){
 		let gameNum = $("#gameNum :selected").val();
 		let buttonNum = $('#buttonNum').children('button').length;
-		
+		let listExist = $('#playNum').children('li').length;
 		
 		/* 게임수가 선택되고 1~45 버튼이 생성이 안 되었으면 최초 1번 실행 */
 		  if(gameNum != "none" && buttonNum == 0 ){
@@ -216,14 +197,23 @@
 				for(let i = 0; i < gameNum; i++) {
 		            $('#playNum').append("<li id='li" + i + "'>  </li><br>"); 
 		        }
+				
+				return;
 			}
 		  else{
 			  if(gameNum == "none") alert("게임수를 선택해주세요.");
 			  else {
 				  $("#labelGameNum").text(" (" + gameNum + "게임)");
 			  }
-			  
 		  }
+		
+
+		console.log(listExist);
+		if(listExist == 0){
+			for(let i = 0; i < gameNum; i++) {
+	            $('#playNum').append("<li id='li" + i + "'>  </li><br>"); 
+	        }
+		}
 	});
 	
 	<%-- 1~45 버튼 눌렀을때 --%>
@@ -325,6 +315,9 @@
 		let winNum = $("#winNum").children("button").length;
 		if(winNum > 0) return;
 		
+		let listExist = $("#playNum").children('li').length;
+		if(listExist == 0) return;
+		
 		let numCount = $("#selectedNum").children('button').length;
 		let numRemain = 6 - numCount; 
 		let gameNum = $("#gameNum :selected").val();
@@ -408,8 +401,8 @@
 	<%-- 실행 버튼 눌렀을때 --%>
 	function playGame(){
 		
-		$.cookie('test', 12);
-		console.log($.cookie('test'));
+		//$.cookie('test', 12);
+		//console.log($.cookie('test'));
 		let gameNum = $("#gameNum :selected").val();
 		let playNum = $("#li"+(gameNum-1)).children('button').length;
 		/* 게임 수 만큼 번호 등록해야만 실행 버튼이 진행 */
