@@ -8,24 +8,53 @@
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 </head>
 <body>
+<fieldset style="width: 400px">
+		<legend>Login</legend>
 	<form>
-		<table>
-			<tr>
-				<td><label>아이디 : </label></td><td><input type="text" id="userId" placeholder="아이디를 입력하세요."></td>
-			</tr>
-			<tr>
-				<td>비밀번호 : </td><td><input type="text" id="userPw" placeholder="비밀번호를 입력하세요."></td>
-			</tr>
-		</table>
-		<input type="button" value="회원가입" onclick="signUp()">
-		<input type="button" id="login" value="로그인">
+		<input type="text" id="userId" placeholder="아이디">
+		<label id="idCheck" style="font-size: 9pt; color: red"></label><br>
+		<input type="password" id="userPw" placeholder="비밀번호">
+		<label id="pwCheck" style="font-size: 9pt; color: red"></label><br>
+			
+		<input type="button" id="login" value="로그인" style="margin-top:5px">
+		<input type="button" value="회원가입" style='margin-top:5px' onclick="signUp()">
 	</form>
+</fieldset>
 </body>
 <script>
 
 	function signUp(){
 		location.replace("signUp.do");
 	}
+	
+	$("#userId").on("propertychange change keyup paste input", function() {
+		let id = $("#userId").val();
+		
+		//입력 받은 ID에 공백 혹은 특수문자가 있는 경우
+		if(id.search(/\W|\s/g) > -1){
+			$("#idCheck").text("공백 또는 특수문자가 입력되었습니다");
+		    return;
+		}
+		else{
+			$("#idCheck").text("");
+			return;
+		}
+		
+	});
+	
+	$("#userPw").on("propertychange change keyup paste input", function() {
+		let pw = $("#userPw").val();
+		
+		//입력 받은 PW에 공백 혹은 특수문자가 있는 경우
+		if(pw.search(/\W|\s/g) > -1){
+			$("#pwCheck").text("공백 또는 특수문자가 입력되었습니다");
+		    return;
+		}
+		else{
+			$("#pwCheck").text("");
+			return;
+		}
+	});
 	
 	$("#login").click(function () {
 		let id = $("#userId").val();
@@ -62,7 +91,7 @@
 			  type : 'POST',
 			  data: {
 				  "id": id,
-				  "pw": pw
+				  "password": pw
 			  },
 			  dataType : "text",
 			  success : function(data) {
