@@ -8,24 +8,76 @@
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 </head>
 <body>
+<fieldset style="width: 500px">
+		<legend>회원가입</legend>
 	<form>
-		<table>
-			<tr>
-				<td><label>아이디 : </label></td><td><input type="text" id="userId" placeholder="아이디를 입력하세요."></td>
-			</tr>
-			<tr>
-				<td><label>비밀번호 : </label></td><td><input type="text" id="userPw" placeholder="패스워드를 입력하세요."></td>
-			</tr>
-			<tr>
-				<td><label>비밀번호 확인 : </label></td><td><input type="text" id="pwCheck" placeholder="패스워드를 입력하세요."></td>
-			</tr>
-		</table>
-		<input type="button" value="가입하기" onclick="signUp()">
+		
+		<div>
+			<input type="text" id="userId" placeholder="아이디">
+			<input type="button" value="중복확인"></td>
+			<label id="idLabel" style="font-size: 9pt; color: red"></label>
+		</div>
+		
+		<div style='margin-top:6px'>
+			<input type="text" id="userPw" placeholder="비밀번호">
+			<label id="pwLabel" style="font-size: 9pt; color: red"></label>
+		</div>
+		
+		<div style='margin-top:6px'>
+			<input type="text" id="pwCheck" placeholder="패스워드 확인">
+			<label id="sameCheck" style="font-size: 9pt; color: red"></label>
+		</div>
+		
+		<div style='margin-top:6px'>
+			<input type="button" value="가입하기" onclick="signUp()">
+		</div>
+		
 	</form>
+</fieldset>
 </body>
 <script type="text/javascript">
 
-<%-- ID, PW 올바르게 입력했는지 확인 --%>
+	$("#userId").on("propertychange change keyup paste input", function() {
+		let id = $("#userId").val();
+		
+		//입력 받은 PW에 공백 혹은 특수문자가 있는 경우
+		if(id.search(/\W|\s/g) > -1){
+			$("#idLabel").text("공백 또는 특수문자가 입력되었습니다");
+		}
+		else{
+			$("#idLabel").text("");
+		}
+	});
+	
+	$("#userPw").on("propertychange change keyup paste input", function() {
+		let pw = $("#userPw").val();
+		
+		//입력 받은 PW에 공백 혹은 특수문자가 있는 경우
+		if(pw.search(/\W|\s/g) > -1){
+			$("#pwLabel").text("공백 또는 특수문자가 입력되었습니다");
+		}
+		else{
+			$("#pwLabel").text("");
+		}
+	});
+	
+	$("#pwCheck").on("propertychange change keyup paste input", function() {
+		let pw = $("#userPw").val();
+		let pwCheck = $("#pwCheck").val();
+		
+		if(pw == pwCheck){
+			$("#sameCheck").css("color", "green");
+			$("#sameCheck").text("비밀번호가 일치합니다");
+		}
+		else{
+			$("#sameCheck").css("color", "red");
+			$("#sameCheck").text("비밀번호가 일치하지 않습니다!");
+		}
+		
+		
+	});
+	
+	<%-- ID, PW 올바르게 입력했는지 확인 --%>
 	function signUp(){
 		let id = $("#userId").val();
 		let pw = $("#userPw").val();
