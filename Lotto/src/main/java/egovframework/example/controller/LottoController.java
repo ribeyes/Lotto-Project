@@ -77,6 +77,24 @@ public class LottoController {
 		}
 	}
 	
+	/* 아이디 중복확인  */
+	@ResponseBody
+	@RequestMapping(value="/sameId.do", method=RequestMethod.POST)
+	public String sameId(User user) throws Exception { 
+		List<User> id = lottoService.getUser();
+		
+		String userId;
+		for (int i = 0; i < id.size(); i++) {
+			userId = id.get(i).getId();
+			if(user.getId().equals(userId)) {
+				return "true";
+			}
+		}
+		
+		return "false";
+	}
+	
+	
 	@RequestMapping("/view.do")
 	public ModelAndView dbPage(ModelAndView mav) throws Exception { 
         
