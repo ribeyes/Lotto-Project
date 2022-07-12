@@ -13,8 +13,8 @@
 	<form>
 		
 		<div>
-			<input type="text" id="userId" placeholder="아이디">
-			<input type="button" value="중복확인" id="sameId" onclick="sameIdCheck()">
+			<input type="text" id="userId" placeholder="아이디(4~12자)">
+			<button type="button" id="sameId" onclick="sameIdCheck()">중복확인</button>
 			<label id="idLabel" style="font-size: 9pt; color: red"></label>
 		</div>
 		
@@ -39,6 +39,13 @@
 
 	function sameIdCheck(){
 		let id = $("#userId").val();
+		let idLength = $("#userId").val().length;
+		
+		if(idLength < 4){
+			$("#idLabel").css("color", "red");
+			$("#idLabel").text("4자 이상 입력해주세요.");
+			return;
+		}
 		
 		$.ajax({
 			  url : "/sameId.do",
@@ -74,8 +81,10 @@
 			$("#userId").val("");
 		}
 		
-		//입력 받은 PW에 공백 혹은 특수문자가 있는 경우
+		
+		//입력 받은 ID에 공백 혹은 특수문자가 있는 경우
 		if(id.search(/\W|\s/g) > -1){
+			$("#idLabel").css("color", "red");
 			$("#idLabel").text("공백 또는 특수문자가 입력되었습니다");
 		}
 		else{
@@ -134,9 +143,10 @@
 		let noInputPw = $("#userPw").val().length;
 		let noInputPwCheck = $("#pwCheck").val().length;
 		
-		//'아이디' 입력창에 아무것도 입력하지 않은 경우
-		if(noInputId == 0){
-		    alert( '아이디가 입력되지 않았습니다.');
+		
+		//'아이디' 입력창에 4자 이상 입력하지 않은 경우
+		if(noInputId < 0){
+		    alert( '아이디를 4~12자 입력해주세요.');
 		    return;
 		}
 		//'비밀번호' 입력창에 아무것도 입력하지 않은 경우
@@ -175,6 +185,13 @@
 		    return;
 		}
 		
+		//중복확인 했는지 확인
+		let str = $("#idLabel").text();
+		console.log(str);
+		if(str != "사용 가능한 아이디입니다!") {
+			alert("중복확인을 해주세요.");
+			return;
+		}
 		
 		$.ajax({
 			  url : "/signUpRegister.do",
