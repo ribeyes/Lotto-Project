@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.dao.LottoDAO">
+	<select id="getUser" resultType="user">
+		SELECT ID, PASSWORD
+		FROM MBER_INFO
+	</select>
+	
+	<select id="getLottoInfo" resultType="lottoInfo">
+		SELECT ORDER, PRZWIN_NO
+		FROM LTTR_INFO
+	</select>
+	
+	<insert id="insertUser">
+		INSERT INTO MBER_INFO(ID, PASSWORD) VALUES(#{id}, #{password})
+	</insert>
+</mapper>
