@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import egovframework.example.dao.LottoDAO;
+import egovframework.example.vo.LottoInfo;
 import egovframework.example.vo.User;
 
 @Service
@@ -18,8 +19,11 @@ public class LottoService {
     	return lottoDAO.getUser();
     }
     
+    public List<LottoInfo> getLottoInfo() {  
+    	return lottoDAO.getLottoInfo();
+    }
+    
     public int insertUser(User user) {  // user 테이블에 넣기
     	return lottoDAO.insertUser(user);
     }
 }
-
