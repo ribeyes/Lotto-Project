@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import egovframework.example.vo.LottoInfo;
 import egovframework.example.vo.User;
 import egovframework.rte.psl.dataaccess.mapper.Mapper;
 
@@ -24,8 +25,11 @@ public class LottoDAO {
 		return query.selectList("getUser");
 	}
 	
+	public List<LottoInfo> getLottoInfo() { 
+		return query.selectList("getLottoInfo");
+	}
+	
 	public int insertUser(User user) {
 		return query.insert("insertUser", user);
 	}
 }
-
