@@ -65,6 +65,7 @@
 
 	<fieldset id="fieldset3" style="width: 400px; display: none">
 		<legend id="gameTitle">게임</legend>
+		<div id="orderNum" ></div>
 		<label id="winNum"> 당첨번호 : </label><br><br>
 		<ul id='date' style='list-style:none'></ul>
 		<ol id='playNum' type="A"></ol>
@@ -423,6 +424,18 @@
 		let randomNum;
 		let sameNum;
 		
+		/* 지난 회차 불러오기 */
+		$.ajax({
+			  url : "/orderNum.do",
+			  type : 'POST',
+			  dataType : "text",
+			  success : function(data) {
+				  $('#orderNum').append("<label>" + data + "</label>");
+			  },
+			  error : function(){
+					alert("ajax 실패");
+				}
+		});
 		
 		if(dateExist == 0){
 	    	$('#date').append("<li><label>발 행 일 &nbsp: " + now + "</label></<li>");
