@@ -1,18 +1,17 @@
 package egovframework.example.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import egovframework.example.service.LottoService;
+import egovframework.example.vo.LottoInfo;
 import egovframework.example.vo.User;
 
 @Controller
@@ -51,10 +50,12 @@ public class LottoController {
 		
 		String userId;
 		String userPw;
+		System.out.println(account.get(0).getId());
+		System.out.println(account.get(0).getPassword());
 		for (int i = 0; i < account.size(); i++) {
 			userId = account.get(i).getId();
-			userPw = account.get(i).getPw();
-			if(user.getId().equals(userId) && user.getPw().equals(userPw)) {
+			userPw = account.get(i).getPassword();
+			if(user.getId().equals(userId) && user.getPassword().equals(userPw)) {
 				return "true";
 			}
 		}
@@ -94,6 +95,16 @@ public class LottoController {
 		return "false";
 	}
 	
+	/* 로또 지난 회차 정보 받아오기*/
+	@ResponseBody
+	@RequestMapping(value="/orderNum.do", method=RequestMethod.POST)
+	public String orderNum() throws Exception { 
+		List<LottoInfo> lotto = lottoService.getLottoInfo();
+		int lastOrder = lotto.get(lotto.size()-1).getOrder();
+		System.out.println(lastOrder);
+		
+		return lastOrder + "회";
+	}
 	
 	@RequestMapping("/view.do")
 	public ModelAndView dbPage(ModelAndView mav) throws Exception { 
