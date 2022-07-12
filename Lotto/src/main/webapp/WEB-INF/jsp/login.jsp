@@ -29,6 +29,12 @@
 	
 	$("#userId").on("propertychange change keyup paste input", function() {
 		let id = $("#userId").val();
+		let idLength = $("#userId").val().length;
+		
+		if(idLength > 12){
+			alert("12자를 초과했습니다");
+			$("#userId").val("");
+		}
 		
 		//입력 받은 ID에 공백 혹은 특수문자가 있는 경우
 		if(id.search(/\W|\s/g) > -1){
@@ -44,6 +50,12 @@
 	
 	$("#userPw").on("propertychange change keyup paste input", function() {
 		let pw = $("#userPw").val();
+		let pwLength = $("#userPw").val().length;
+		
+		if(pwLength > 12){
+			alert("12자를 초과했습니다");
+			$("#userPw").val("");
+		}
 		
 		//입력 받은 PW에 공백 혹은 특수문자가 있는 경우
 		if(pw.search(/\W|\s/g) > -1){
