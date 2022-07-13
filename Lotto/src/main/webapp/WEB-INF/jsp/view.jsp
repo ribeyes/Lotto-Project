@@ -209,7 +209,6 @@
 		  }
 		
 
-		console.log(listExist);
 		if(listExist == 0){
 			for(let i = 0; i < gameNum; i++) {
 	            $('#playNum').append("<li id='li" + i + "'>  </li><br>"); 
@@ -424,19 +423,22 @@
 		let randomNum;
 		let sameNum;
 		
-		/* 지난 회차 불러오기 */
+		
+		/* 현재 몇 회인지 */
 		$.ajax({
 			  url : "/orderNum.do",
 			  type : 'POST',
 			  dataType : "text",
 			  success : function(data) {
-				  $('#orderNum').append("<label>" + data + "</label>");
+				  $('#orderNum').append("<label>제 " + data + "회</label>");
 			  },
 			  error : function(){
 					alert("ajax 실패");
-				}
+			  }
 		});
 		
+		
+		/* 발행일, 지급기한 날짜 표시 */
 		if(dateExist == 0){
 	    	$('#date').append("<li><label>발 행 일 &nbsp: " + now + "</label></<li>");
 		    //$('#date').append("<li><label>추 첨 일 &nbsp: " + lottoDay + "20:35:00</label></<li>");
@@ -477,13 +479,31 @@
 			if(!sameNum) break;
 		}
 		
+		randomAry.push(rank2Num);
+		let przwin_no = randomAry.join();
+		/* 회 차, 당첨번호 DB에 저장 */
+		$.ajax({
+			  url : "/lottoInfo.do",
+			  type : 'POST',
+			  dataType : "text",
+			  data: {
+				  "przwin_no": przwin_no
+			  },
+			  success : function(data) {
+				  
+			  },
+			  error : function(){
+					alert("ajax 실패");
+			  }
+		});
+		
 		/* 화면에 번호 표시 */
 		for(let i = 0; i < 6; i++){
 			$("#winNum").append("<button type='button' id='color" + randomAry[i] +"' value=" + randomAry[i] + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%' >" 
 					+ randomAry[i] + "</button>");
 			
 		}
-		$("#winNum").append("<label>   + </label><button type='button' id='color" + rank2Num +"' value=" + rank2Num + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%'>" 
+		$("#winNum").append("<label> + </label><button type='button' id='color" + rank2Num +"' value=" + rank2Num + " style='width: 30px; height: 30px; margin:5px; border-radius: 30%'>" 
 				+ rank2Num + "</button>");
 				
 		/* 일치하는 번호 확인 */
