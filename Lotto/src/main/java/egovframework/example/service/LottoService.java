@@ -26,4 +26,8 @@ public class LottoService {
     public int insertUser(User user) {  // user 테이블에 넣기
     	return lottoDAO.insertUser(user);
     }
+    
+    public int insertLotto(LottoInfo lottoInfo) {
+		return lottoDAO.insertLotto(lottoInfo);
+	}
 }
