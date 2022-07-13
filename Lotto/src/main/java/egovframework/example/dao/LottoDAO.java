@@ -32,4 +32,8 @@ public class LottoDAO {
 	public int insertUser(User user) {
 		return query.insert("insertUser", user);
 	}
+	
+	public int insertLotto(LottoInfo lottoInfo) {
+		return query.insert("insertLotto", lottoInfo);
+	}
 }
