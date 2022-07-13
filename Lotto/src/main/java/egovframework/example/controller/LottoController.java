@@ -20,6 +20,12 @@ public class LottoController {
 	@Resource(name="lottoService")
 	private LottoService lottoService;
 	
+	/* 메인 페이지 호출*/
+	@RequestMapping("/intro.do")
+	public String introPage() throws Exception {
+		return "intro";
+	}
+	
 	/* 로그인 페이지 호출*/
 	@RequestMapping("/login.do")
 	public String loginPage() throws Exception {
@@ -95,15 +101,43 @@ public class LottoController {
 		return "false";
 	}
 	
-	/* 로또 지난 회차 정보 받아오기*/
+	/* 로또 회 차 정보 받아오기*/
 	@ResponseBody
-	@RequestMapping(value="/orderNum.do", method=RequestMethod.POST)
+	@RequestMapping(value="/orderNum.do", method=RequestMethod.POST) 
 	public String orderNum() throws Exception { 
 		List<LottoInfo> lotto = lottoService.getLottoInfo();
 		int lastOrder = lotto.get(lotto.size()-1).getOrder();
-		System.out.println(lastOrder);
-		
-		return lastOrder + "회";
+		  
+		return lastOrder + 1 + ""; //현재 회 차 보내기
+	}
+	 
+	/* 로또 지난 회 차 당첨번호 받아오기*/
+	@ResponseBody
+	@RequestMapping(value="/lastNum.do", method=RequestMethod.POST) 
+	public String lastNum() throws Exception { 
+		List<LottoInfo> lotto = lottoService.getLottoInfo(); 
+		String lastNumber = lotto.get(lotto.size()-1).getPrzwin_no(); 
+		System.out.println("지난 당첨번호: " + lastNumber);
+		  
+		return lastNumber; 
+	}
+	
+	/* 로또 회 차, 당첨번호 DB에 저장*/
+	@ResponseBody
+	@RequestMapping(value="/lottoInfo.do", method=RequestMethod.POST) 
+	public String lottoInfoInsert(LottoInfo lottoInfo) throws Exception { 
+		List<LottoInfo> lotto = lottoService.getLottoInfo();
+		int lastOrder = lotto.get(lotto.size()-1).getOrder();
+		lottoInfo.setOrder(lastOrder+1);
+		int test = lottoService.insertLotto(lottoInfo); 
+		if(test == 1) {
+			System.out.println("DB 등록완료!");
+		}
+		else {
+			System.out.println("실패!");
+		}
+		  
+		return ""; 
 	}
 	
 	@RequestMapping("/view.do")
